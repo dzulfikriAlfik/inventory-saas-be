@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+enum PurchaseReceiptStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+enum SalesShipmentStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+enum StockAdjustmentStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT_IN
+  ADJUSTMENT_OUT
+}
+
+enum MovementDocumentType {
+  PURCHASE_RECEIPT
+  SALES_SHIPMENT
+  STOCK_ADJUSTMENT
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  fullName     String
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  memberships  Membership[]
+  sessions     Session[]
+
+  @@index([deletedAt])
+}
+
+model Organization {
+  id                 String              @id @default(uuid())
+  name               String
+  slug               String              @unique
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  deletedAt          DateTime?
+  memberships        Membership[]
+  sessions           Session[]
+  products           Product[]
+  warehouses         Warehouse[]
+  suppliers          Supplier[]
+  customers          Customer[]
+  stocks             Stock[]
+  stockMovements     StockMovement[]
+  purchaseReceipts   PurchaseReceipt[]
+  purchaseReceiptItems PurchaseReceiptItem[]
+  salesShipments     SalesShipment[]
+  salesShipmentItems SalesShipmentItem[]
+  stockAdjustments   StockAdjustment[]
+  stockAdjustmentItems StockAdjustmentItem[]
+
+  @@index([deletedAt])
+}
+
+model Membership {
+  id             String       @id @default(uuid())
+  userId         String
+  organizationId String
+  role           Role
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
+  @@index([deletedAt])
+}
+
+model Session {
+  id               String       @id @default(uuid())
+  userId           String
+  organizationId   String
+  refreshTokenHash String       @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime     @default(now())
+  user             User         @relation(fields: [userId], references: [id])
+  organization     Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([userId, organizationId])
+  @@index([revokedAt, expiresAt])
+}
+
+model Product {
+  id             String           @id @default(uuid())
+  organizationId String
+  sku            String
+  name           String
+  unit           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  stocks         Stock[]
+  movements      StockMovement[]
+
+  @@unique([organizationId, sku])
+  @@index([organizationId, deletedAt])
+}
+
+model Warehouse {
+  id             String           @id @default(uuid())
+  organizationId String
+  code           String
+  name           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  stocks         Stock[]
+  movements      StockMovement[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, deletedAt])
+}
+
+model Supplier {
+  id             String           @id @default(uuid())
+  organizationId String
+  code           String
+  name           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, code])
+  @@index([organizationId, deletedAt])
+}
+
+model Customer {
+  id             String           @id @default(uuid())
+  organizationId String
+  code           String
+  name           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, code])
+  @@index([organizationId, deletedAt])
+}
+
+model Stock {
+  id             String       @id @default(uuid())
+  organizationId String
+  productId      String
+  warehouseId    String
+  quantity       Decimal      @db.Decimal(18, 4)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  product        Product      @relation(fields: [productId], references: [id])
+  warehouse      Warehouse    @relation(fields: [warehouseId], references: [id])
+
+  @@unique([organizationId, productId, warehouseId])
+  @@index([organizationId, productId, warehouseId])
+}
+
+model StockMovement {
+  id             String               @id @default(uuid())
+  organizationId String
+  productId      String
+  warehouseId    String
+  movementType   MovementType
+  documentType   MovementDocumentType
+  documentId     String
+  quantity       Decimal              @db.Decimal(18, 4)
+  createdAt      DateTime             @default(now())
+  organization   Organization         @relation(fields: [organizationId], references: [id])
+  product        Product              @relation(fields: [productId], references: [id])
+  warehouse      Warehouse            @relation(fields: [warehouseId], references: [id])
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, documentType, documentId])
+}
+
+model PurchaseReceipt {
+  id              String                @id @default(uuid())
+  organizationId  String
+  receiptNumber   String
+  status          PurchaseReceiptStatus @default(DRAFT)
+  supplierId      String?
+  note            String?
+  createdByUserId String
+  postedByUserId  String?
+  postedAt        DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  organization    Organization          @relation(fields: [organizationId], references: [id])
+  items           PurchaseReceiptItem[]
+
+  @@unique([organizationId, receiptNumber])
+  @@index([organizationId, status, createdAt])
+}
+
+model PurchaseReceiptItem {
+  id                String          @id @default(uuid())
+  organizationId    String
+  purchaseReceiptId String
+  productId         String
+  warehouseId       String
+  quantity          Decimal         @db.Decimal(18, 4)
+  createdAt         DateTime        @default(now())
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  purchaseReceipt   PurchaseReceipt @relation(fields: [purchaseReceiptId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, purchaseReceiptId])
+}
+
+model SalesShipment {
+  id              String              @id @default(uuid())
+  organizationId  String
+  shipmentNumber  String
+  status          SalesShipmentStatus @default(DRAFT)
+  customerId      String?
+  note            String?
+  createdByUserId String
+  postedByUserId  String?
+  postedAt        DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  organization    Organization        @relation(fields: [organizationId], references: [id])
+  items           SalesShipmentItem[]
+
+  @@unique([organizationId, shipmentNumber])
+  @@index([organizationId, status, createdAt])
+}
+
+model SalesShipmentItem {
+  id              String         @id @default(uuid())
+  organizationId  String
+  salesShipmentId String
+  productId       String
+  warehouseId     String
+  quantity        Decimal        @db.Decimal(18, 4)
+  createdAt       DateTime       @default(now())
+  organization    Organization   @relation(fields: [organizationId], references: [id])
+  salesShipment   SalesShipment  @relation(fields: [salesShipmentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, salesShipmentId])
+}
+
+model StockAdjustment {
+  id                  String                @id @default(uuid())
+  organizationId      String
+  adjustmentNumber    String
+  status              StockAdjustmentStatus @default(DRAFT)
+  note                String?
+  createdByUserId     String
+  postedByUserId      String?
+  postedAt            DateTime?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  organization        Organization          @relation(fields: [organizationId], references: [id])
+  items               StockAdjustmentItem[]
+
+  @@unique([organizationId, adjustmentNumber])
+  @@index([organizationId, status, createdAt])
+}
+
+model StockAdjustmentItem {
+  id                String          @id @default(uuid())
+  organizationId    String
+  stockAdjustmentId String
+  productId         String
+  warehouseId       String
+  quantity          Decimal         @db.Decimal(18, 4)
+  createdAt         DateTime        @default(now())
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  stockAdjustment   StockAdjustment @relation(fields: [stockAdjustmentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, stockAdjustmentId])
+}
