@@ -1,4 +1,5 @@
 import type { Role } from "@prisma/client";
+import type { TFunction } from "i18next";
 
 declare global {
   namespace Express {
@@ -8,6 +9,7 @@ declare global {
         organizationId: string;
         role: Role;
       };
+      t: TFunction;
     }
   }
 }

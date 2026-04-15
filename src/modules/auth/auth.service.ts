@@ -26,7 +26,7 @@ export class AuthService {
       where: { email: input.email }
     });
     if (existingUser) {
-      throw new ApiError(409, "Email already registered");
+      throw new ApiError(409, "errors.auth.emailAlreadyRegistered");
     }
 
     const passwordHash = await hashPassword(input.password);
@@ -88,17 +88,17 @@ export class AuthService {
       }
     });
     if (!user || user.deletedAt) {
-      throw new ApiError(401, "Invalid credentials");
+      throw new ApiError(401, "errors.auth.invalidCredentials");
     }
 
     const passwordValid = await verifyPassword(input.password, user.passwordHash);
     if (!passwordValid) {
-      throw new ApiError(401, "Invalid credentials");
+      throw new ApiError(401, "errors.auth.invalidCredentials");
     }
 
     const membership = user.memberships.find((item) => !item.deletedAt);
     if (!membership) {
-      throw new ApiError(403, "No active membership");
+      throw new ApiError(403, "errors.auth.noActiveMembership");
     }
 
     const tokens = issueTokens({
@@ -131,7 +131,7 @@ export class AuthService {
       }
     });
     if (!session) {
-      throw new ApiError(401, "Invalid refresh session");
+      throw new ApiError(401, "errors.auth.invalidRefreshSession");
     }
 
     await prisma.session.update({
@@ -195,7 +195,7 @@ export class AuthService {
       }
     });
     if (!membership || membership.user.deletedAt || membership.organization.deletedAt) {
-      throw new ApiError(404, "Membership not found");
+      throw new ApiError(404, "errors.membership.notFound");
     }
 
     return {

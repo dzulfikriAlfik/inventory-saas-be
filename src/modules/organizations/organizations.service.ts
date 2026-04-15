@@ -14,7 +14,7 @@ export class OrganizationsService {
       }
     });
     if (!organization) {
-      throw new ApiError(404, "Organization not found");
+      throw new ApiError(404, "errors.organization.notFound");
     }
 
     return {

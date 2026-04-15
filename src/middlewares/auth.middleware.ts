@@ -9,7 +9,7 @@ export const authMiddleware = (
 ): void => {
   const accessToken = req.cookies.accessToken as string | undefined;
   if (!accessToken) {
-    throw new ApiError(401, "Missing access token");
+    throw new ApiError(401, "errors.auth.missingAccessToken");
   }
 
   try {
@@ -21,6 +21,6 @@ export const authMiddleware = (
     };
     next();
   } catch {
-    throw new ApiError(401, "Invalid access token");
+    throw new ApiError(401, "errors.auth.invalidAccessToken");
   }
 };

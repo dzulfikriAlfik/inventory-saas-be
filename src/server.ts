@@ -1,7 +1,7 @@
 import { app } from "./app";
 import { env } from "./config/env";
+import { logger } from "./config/logger";
 
 app.listen(env.PORT, () => {
-  // Keep startup logging simple for local development and test runs.
-  console.log(`Inventory SaaS API listening on port ${env.PORT}`);
+  logger.info(`Inventory SaaS API listening on port ${env.PORT}`);
 });

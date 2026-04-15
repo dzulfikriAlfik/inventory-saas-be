@@ -7,7 +7,7 @@ export const organizationMiddleware = (
   next: NextFunction
 ): void => {
   if (!req.auth?.organizationId) {
-    throw new ApiError(403, "Organization context is required");
+    throw new ApiError(403, "errors.organization.contextRequired");
   }
 
   next();

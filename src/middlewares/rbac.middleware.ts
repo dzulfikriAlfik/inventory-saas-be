@@ -7,11 +7,11 @@ export const rbacMiddleware =
   (req: Request, _res: Response, next: NextFunction): void => {
     const role = req.auth?.role;
     if (!role) {
-      throw new ApiError(401, "Authentication is required");
+      throw new ApiError(401, "errors.auth.authenticationIsRequired");
     }
 
     if (!allowedRoles.includes(role)) {
-      throw new ApiError(403, "Forbidden");
+      throw new ApiError(403, "errors.rbac.forbidden");
     }
 
     next();

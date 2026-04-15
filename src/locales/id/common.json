@@ -1,0 +1,39 @@
+{
+  "messages": {
+    "auth": {
+      "registered": "Berhasil mendaftar",
+      "loginSuccess": "Login berhasil",
+      "tokenRefreshed": "Token disegarkan",
+      "logoutSuccess": "Logout berhasil"
+    }
+  },
+  "errors": {
+    "internal": "Kesalahan server internal",
+    "auth": {
+      "missingAccessToken": "Token akses tidak ada",
+      "invalidAccessToken": "Token akses tidak valid",
+      "missingRefreshToken": "Token penyegaran tidak ada",
+      "invalidRefreshSession": "Sesi penyegaran tidak valid",
+      "authenticationRequired": "Autentikasi diperlukan",
+      "authenticationIsRequired": "Autentikasi diperlukan",
+      "invalidCredentials": "Kredensial tidak valid",
+      "emailAlreadyRegistered": "Email sudah terdaftar",
+      "noActiveMembership": "Tidak ada keanggotaan aktif"
+    },
+    "organization": {
+      "contextRequired": "Konteks organisasi diperlukan",
+      "notFound": "Organisasi tidak ditemukan"
+    },
+    "membership": {
+      "notFound": "Keanggotaan tidak ditemukan"
+    },
+    "rbac": {
+      "forbidden": "Akses ditolak"
+    },
+    "validation": {
+      "invalidBody": "Body permintaan tidak valid",
+      "invalidParams": "Parameter permintaan tidak valid",
+      "invalidQuery": "Query permintaan tidak valid"
+    }
+  }
+}

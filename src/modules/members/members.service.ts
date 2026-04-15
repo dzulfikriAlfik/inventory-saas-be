@@ -47,7 +47,7 @@ export class MembersService {
       }
     });
     if (!membership) {
-      throw new ApiError(404, "Membership not found");
+      throw new ApiError(404, "errors.membership.notFound");
     }
 
     await prisma.membership.update({

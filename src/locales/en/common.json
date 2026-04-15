@@ -1,0 +1,39 @@
+{
+  "messages": {
+    "auth": {
+      "registered": "Registered successfully",
+      "loginSuccess": "Login successful",
+      "tokenRefreshed": "Token refreshed",
+      "logoutSuccess": "Logout successful"
+    }
+  },
+  "errors": {
+    "internal": "Internal server error",
+    "auth": {
+      "missingAccessToken": "Missing access token",
+      "invalidAccessToken": "Invalid access token",
+      "missingRefreshToken": "Missing refresh token",
+      "invalidRefreshSession": "Invalid refresh session",
+      "authenticationRequired": "Authentication required",
+      "authenticationIsRequired": "Authentication is required",
+      "invalidCredentials": "Invalid credentials",
+      "emailAlreadyRegistered": "Email already registered",
+      "noActiveMembership": "No active membership"
+    },
+    "organization": {
+      "contextRequired": "Organization context is required",
+      "notFound": "Organization not found"
+    },
+    "membership": {
+      "notFound": "Membership not found"
+    },
+    "rbac": {
+      "forbidden": "Forbidden"
+    },
+    "validation": {
+      "invalidBody": "Invalid request body",
+      "invalidParams": "Invalid request params",
+      "invalidQuery": "Invalid request query"
+    }
+  }
+}

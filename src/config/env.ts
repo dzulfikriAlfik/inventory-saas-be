@@ -20,7 +20,10 @@ const envSchema = z.object({
     .default("false")
     .transform((value) => value === "true"),
   COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
-  FRONTEND_URL: z.string().url()
+  FRONTEND_URL: z.string().url(),
+  LOG_LEVEL: z.enum(["error", "warn", "info", "http", "verbose", "debug", "silly"]).default("info"),
+  LOG_TO_FILE: z.enum(["true", "false"]).optional(),
+  LOG_MAX_FILES: z.string().default("14d")
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -28,4 +31,14 @@ if (!parsed.success) {
   throw new Error(`Invalid environment variables: ${parsed.error.message}`);
 }
 
-export const env = parsed.data;
+const logToFile =
+  parsed.data.LOG_TO_FILE === "true"
+    ? true
+    : parsed.data.LOG_TO_FILE === "false"
+      ? false
+      : parsed.data.NODE_ENV !== "test";
+
+export const env = {
+  ...parsed.data,
+  LOG_TO_FILE: logToFile
+};
