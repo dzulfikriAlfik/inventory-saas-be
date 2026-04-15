@@ -1,5 +1,8 @@
 import type { Config } from "jest";
 
+/**
+ * Jest configuration for unit and integration tests (`src/test`).
+ */
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "node",

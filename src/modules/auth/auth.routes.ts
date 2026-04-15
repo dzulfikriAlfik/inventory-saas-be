@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { AuthRouteTemplate } from "../../constants/api-path";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { validateMiddleware } from "../../middlewares/validate.middleware";
 import { asyncHandler } from "../../utils/async-handler";
@@ -8,78 +9,31 @@ import { loginSchema, refreshSchema, registerSchema } from "./auth.schema";
 const router = Router();
 const controller = new AuthController();
 
-/**
- * @openapi
- * /auth/register:
- *   post:
- *     tags: [Auth]
- *     summary: Register a user and organization
- *     responses:
- *       201:
- *         description: Registered successfully
- */
+/** `POST /auth/register` — create user, organization, and OWNER membership. */
 router.post(
-  "/register",
+  AuthRouteTemplate.Register,
   validateMiddleware({ body: registerSchema }),
   asyncHandler((req, res) => controller.register(req, res))
 );
 
-/**
- * @openapi
- * /auth/login:
- *   post:
- *     tags: [Auth]
- *     summary: Login using email and password
- *     responses:
- *       200:
- *         description: Login successful
- */
+/** `POST /auth/login` — issue session cookies. */
 router.post(
-  "/login",
+  AuthRouteTemplate.Login,
   validateMiddleware({ body: loginSchema }),
   asyncHandler((req, res) => controller.login(req, res))
 );
 
-/**
- * @openapi
- * /auth/refresh:
- *   post:
- *     tags: [Auth]
- *     summary: Refresh access token
- *     responses:
- *       200:
- *         description: Token refreshed
- */
+/** `POST /auth/refresh` — rotate refresh session. */
 router.post(
-  "/refresh",
+  AuthRouteTemplate.Refresh,
   validateMiddleware({ body: refreshSchema }),
   asyncHandler((req, res) => controller.refresh(req, res))
 );
 
-/**
- * @openapi
- * /auth/logout:
- *   post:
- *     tags: [Auth]
- *     summary: Logout current session
- *     responses:
- *       200:
- *         description: Logout successful
- */
-router.post("/logout", asyncHandler((req, res) => controller.logout(req, res)));
+/** `POST /auth/logout` — revoke refresh session and clear cookies. */
+router.post(AuthRouteTemplate.Logout, asyncHandler((req, res) => controller.logout(req, res)));
 
-/**
- * @openapi
- * /auth/me:
- *   get:
- *     tags: [Auth]
- *     summary: Get current authenticated user
- *     security:
- *       - cookieAuth: []
- *     responses:
- *       200:
- *         description: Current user context
- */
-router.get("/me", authMiddleware, asyncHandler((req, res) => controller.me(req, res)));
+/** `GET /auth/me` — current user + organization (requires access cookie). */
+router.get(AuthRouteTemplate.Me, authMiddleware, asyncHandler((req, res) => controller.me(req, res)));
 
 export const authRoutes = router;

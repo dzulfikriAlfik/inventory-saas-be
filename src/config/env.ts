@@ -38,6 +38,9 @@ const logToFile =
       ? false
       : parsed.data.NODE_ENV !== "test";
 
+/**
+ * Validated process environment for the active `NODE_ENV` (loaded from `.env.<NODE_ENV>`).
+ */
 export const env = {
   ...parsed.data,
   LOG_TO_FILE: logToFile

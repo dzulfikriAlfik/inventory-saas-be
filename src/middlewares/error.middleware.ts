@@ -1,7 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
 import { logger } from "../config/logger";
+import { HttpStatus } from "../constants/http-status";
+import { I18nKey } from "../constants/i18n-key";
 import { ApiError } from "../utils/api-error";
 
+/**
+ * Translates an i18n key using the request locale when available.
+ *
+ * @param req Request carrying `req.t` from i18next middleware.
+ * @param key Translation key in namespace `common`.
+ * @returns Localized string.
+ */
 const translate = (req: Request, key: string): string => {
   if (typeof req.t === "function") {
     return req.t(key);
@@ -9,6 +18,14 @@ const translate = (req: Request, key: string): string => {
   return key;
 };
 
+/**
+ * Central error handler: maps `ApiError` to JSON and logs unexpected failures.
+ *
+ * @param error Thrown value.
+ * @param req Express request (for locale).
+ * @param res Express response.
+ * @param _next Next function (unused; required for Express error middleware signature).
+ */
 export const errorMiddleware = (
   error: unknown,
   req: Request,
@@ -28,7 +45,7 @@ export const errorMiddleware = (
   } else {
     logger.error(String(error));
   }
-  res.status(500).json({
-    message: translate(req, "errors.internal")
+  res.status(HttpStatus.InternalServerError).json({
+    message: translate(req, I18nKey.Errors.Internal)
   });
 };
