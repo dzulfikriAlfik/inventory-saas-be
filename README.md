@@ -33,6 +33,16 @@ npm run prisma:generate
 npm run prisma:migrate:dev
 ```
 
+## Database seed (MVP demo data)
+
+After migrations, you can load demo users, one tenant, master data, and sample DRAFT documents (development only — **this command deletes all rows** in the seeded tables first):
+
+```bash
+npm run db:seed
+```
+
+Uses `.env.development` for `DATABASE_URL`. Demo logins are printed when the run finishes (same password for all demo accounts).
+
 ## Scripts
 
 | Command | Description |
@@ -44,6 +54,7 @@ npm run prisma:migrate:dev
 | `npm run prisma:migrate:dev` | Create/apply migrations (dev) |
 | `npm run prisma:migrate:test` | Deploy migrations (test DB from `.env.test`) |
 | `npm run prisma:studio` | Prisma Studio |
+| `npm run db:seed` | Reset and seed MVP demo data (dev DB) |
 | `npm test` | Jest (unit + integration) |
 | `npm run test:unit` | Unit tests only |
 | `npm run test:integration` | Integration tests only |

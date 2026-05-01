@@ -12,6 +12,7 @@
     "prisma:migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
     "prisma:migrate:test": "dotenv -e .env.test -- prisma migrate deploy",
     "prisma:studio": "dotenv -e .env.development -- prisma studio",
+    "db:seed": "dotenv -e .env.development -- prisma db seed",
     "test": "NODE_ENV=test jest --runInBand",
     "test:unit": "NODE_ENV=test jest --runInBand src/test/unit",
     "test:integration": "NODE_ENV=test jest --runInBand src/test/integration"
@@ -31,6 +32,9 @@
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
     "zod": "^4.1.12"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
